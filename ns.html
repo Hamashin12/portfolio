@@ -1,28 +1,39 @@
 <!DOCTYPE html>
-<html lang="ja"><head>
+<html lang="ja">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ランダムタイミングゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: #1c1c1c;
+            color: #eee;
             text-align: center;
+            margin: 0;
             padding-top: 50px;
         }
         .container {
             margin-top: 20px;
         }
         #startButton, #stopButton {
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 20px;
+            font-size: 24px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, transform 0.2s;
         }
-        #startButton:active, #stopButton:active {
+        #startButton:hover, #stopButton:hover {
             background-color: #45a049;
+            transform: scale(1.1);
         }
         #message {
             font-size: 18px;
@@ -65,7 +76,7 @@
                 isTiming = true;
                 message.textContent = `目標時間: ${goalTime}秒 です！タイマー開始！`;
                 startButton.style.display = 'none'; // Startボタンを隠す
-                stopButton.style.display = 'inline-block'; // Stopボタンを表示
+                stopButton.style.display = 'inline-flex'; // Stopボタンを表示
                 timerDisplay.style.display = 'block'; // タイマー表示
 
                 startTime = Date.now();
@@ -92,14 +103,12 @@
                 alert(`目標タイム: ${goalTime}秒\nあなたのタイム: ${totalTime.toFixed(2)}秒\nスコア: ${score.toFixed(2)}秒差`);
 
                 // リセット
-                startButton.style.display = 'inline-block';
+                startButton.style.display = 'inline-flex';
                 stopButton.style.display = 'none';
                 timerDisplay.style.display = 'none';
                 isTiming = false;
             }
         });
     </script>
-
-
-
-</body></html>
+</body>
+</html>
