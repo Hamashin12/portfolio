@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ぷよぷよ風ゲーム</title>
+    <title>パズルゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <h1>ぷよぷよ風ゲーム</h1>
+    <h1>パズルゲーム</h1>
     <canvas id="gameCanvas" width="200" height="400"></canvas>
     <p id="instructions">矢印キーで操作: 左/右 移動、上 回転、下 早く落下</p>
 
@@ -95,9 +95,9 @@
             if (!checkCollision(moved)) {
                 currentPiece.tiles = moved;
             } else if (dy === 1) {
+                // 下に移動できない(衝突) → 固定
                 placePiece(currentPiece);
-                clearMatches();
-                applyGravity();
+                processBoard(); // 消去・連鎖処理
                 currentPiece = generatePiece();
 
                 if (checkCollision(currentPiece.tiles)) {
@@ -118,13 +118,73 @@
             });
         }
 
-        function applyGravity() {
-            for (let c = 0; c < COLS; c++) {
-                for (let r = ROWS - 1; r > 0; r--) {
-                    if (!board[r][c] && board[r - 1][c]) {
-                        board[r][c] = board[r - 1][c];
-                        board[r - 1][c] = null;
+        // 同色で4つ以上繋がったタイルを探索する関数
+        function findConnectedTiles(sx, sy, color, visited) {
+            const stack = [{x: sx, y: sy}];
+            const connected = [];
+            while (stack.length > 0) {
+                const {x, y} = stack.pop();
+                if (x < 0 || x >= COLS || y < 0 || y >= ROWS) continue;
+                if (visited[y][x]) continue;
+                if (board[y][x] !== color) continue;
+
+                visited[y][x] = true;
+                connected.push({x, y});
+
+                stack.push({x: x+1, y});
+                stack.push({x: x-1, y});
+                stack.push({x, y: y+1});
+                stack.push({x, y: y-1});
+            }
+            return connected;
+        }
+
+        // 4つ以上繋がったタイルを消去する関数
+        function clearMatches() {
+            const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+            let cleared = false;
+
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (board[y][x] && !visited[y][x]) {
+                        const color = board[y][x];
+                        const connected = findConnectedTiles(x, y, color, visited);
+                        if (connected.length >= 4) {
+                            // 4つ以上繋がり → 消す
+                            connected.forEach(({x, y}) => {
+                                board[y][x] = null;
+                            });
+                            cleared = true;
+                        }
                     }
+                }
+            }
+            return cleared;
+        }
+
+        function applyGravity() {
+            for (let x = 0; x < COLS; x++) {
+                let stack = [];
+                for (let y = ROWS - 1; y >= 0; y--) {
+                    if (board[y][x]) {
+                        stack.push(board[y][x]);
+                    }
+                }
+                for (let y = ROWS - 1; y >= 0; y--) {
+                    board[y][x] = stack.length > 0 ? stack.shift() : null;
+                }
+            }
+        }
+
+        // 連鎖がなくなるまで消去と重力を繰り返す
+        function processBoard() {
+            let again = true;
+            while (again) {
+                again = false;
+                const cleared = clearMatches();
+                if (cleared) {
+                    applyGravity();
+                    again = true;
                 }
             }
         }
@@ -140,7 +200,26 @@
             if (e.key === "ArrowLeft") movePiece(-1, 0);
             if (e.key === "ArrowRight") movePiece(1, 0);
             if (e.key === "ArrowDown") movePiece(0, 1);
+            if (e.key === "ArrowUp") rotatePiece(currentPiece); // 回転追加
         });
+
+        // 回転関数追加(要望があれば)
+        function rotatePiece(piece) {
+            const pivot = piece.tiles[0];
+            const other = piece.tiles[1];
+            const dx = other.x - pivot.x;
+            const dy = other.y - pivot.y;
+            // 90度時計回り回転
+            const newDx = -dy;
+            const newDy = dx;
+
+            const rotated = [pivot, {x: pivot.x + newDx, y: pivot.y + newDy, color: other.color}];
+            if (!checkCollision(rotated)) {
+                piece.tiles = rotated;
+                drawBoard();
+                drawPiece(piece);
+            }
+        }
 
         currentPiece = generatePiece();
         drawBoard();
