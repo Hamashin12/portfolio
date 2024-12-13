@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ぷよぷよ風ゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #333;
+            color: #eee;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 20px auto;
+            background: #222;
+            border: 2px solid #39FF14;
+        }
+        #instructions {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ぷよぷよ風ゲーム</h1>
+    <canvas id="gameCanvas" width="200" height="400"></canvas>
+    <p id="instructions">矢印キーで操作: 左/右 移動、上 回転、下 早く落下</p>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const COLS = 10; // 横の列数
+        const ROWS = 20; // 縦の行数
+        const TILE_SIZE = 20; // タイルサイズ（ピクセル）
+        const COLORS = ["red", "blue", "green", "yellow", "purple"]; // ブロックの色
+
+        let board = Array.from({ length: ROWS }, () => Array(COLS).fill(null)); // ゲーム盤
+        let currentPiece;
+        let dropInterval = 500;
+        let lastDropTime = Date.now();
+
+        function generatePiece() {
+            const color1 = COLORS[Math.floor(Math.random() * COLORS.length)];
+            const color2 = COLORS[Math.floor(Math.random() * COLORS.length)];
+            return {
+                tiles: [
+                    { x: Math.floor(COLS / 2) - 1, y: 0, color: color1 },
+                    { x: Math.floor(COLS / 2), y: 0, color: color2 },
+                ]
+            };
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c]) {
+                        ctx.fillStyle = board[r][c];
+                        ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = "#333";
+                        ctx.strokeRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    }
+                }
+            }
+        }
+
+        function drawPiece(piece) {
+            piece.tiles.forEach(tile => {
+                ctx.fillStyle = tile.color;
+                ctx.fillRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                ctx.strokeStyle = "#333";
+                ctx.strokeRect(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            });
+        }
+
+        function checkCollision(tiles) {
+            return tiles.some(tile => (
+                tile.x < 0 || tile.x >= COLS ||
+                tile.y >= ROWS ||
+                (tile.y >= 0 && board[tile.y][tile.x])
+            ));
+        }
+
+        function movePiece(dx, dy) {
+            const moved = currentPiece.tiles.map(tile => ({ ...tile, x: tile.x + dx, y: tile.y + dy }));
+
+            if (!checkCollision(moved)) {
+                currentPiece.tiles = moved;
+            } else if (dy === 1) {
+                placePiece(currentPiece);
+                clearMatches();
+                applyGravity();
+                currentPiece = generatePiece();
+
+                if (checkCollision(currentPiece.tiles)) {
+                    alert("Game Over!");
+                    resetGame();
+                }
+            }
+
+            drawBoard();
+            drawPiece(currentPiece);
+        }
+
+        function placePiece(piece) {
+            piece.tiles.forEach(tile => {
+                if (tile.y >= 0) {
+                    board[tile.y][tile.x] = tile.color;
+                }
+            });
+        }
+
+        function applyGravity() {
+            for (let c = 0; c < COLS; c++) {
+                for (let r = ROWS - 1; r > 0; r--) {
+                    if (!board[r][c] && board[r - 1][c]) {
+                        board[r][c] = board[r - 1][c];
+                        board[r - 1][c] = null;
+                    }
+                }
+            }
+        }
+
+        function resetGame() {
+            board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+            currentPiece = generatePiece();
+            drawBoard();
+            drawPiece(currentPiece);
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") movePiece(-1, 0);
+            if (e.key === "ArrowRight") movePiece(1, 0);
+            if (e.key === "ArrowDown") movePiece(0, 1);
+        });
+
+        currentPiece = generatePiece();
+        drawBoard();
+        drawPiece(currentPiece);
+
+        function update() {
+            const now = Date.now();
+            if (now - lastDropTime > dropInterval) {
+                movePiece(0, 1);
+                lastDropTime = now;
+            }
+            requestAnimationFrame(update);
+        }
+
+        update();
+    </script>
+</body>
+</html>

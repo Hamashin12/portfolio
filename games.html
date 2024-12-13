@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームコーナー - 私のホームページ</title>
+    <link rel="stylesheet" href="css/styles.css"> <!-- 共通CSSファイル -->
+    <style>
+        /* about.htmlと同様の黒×緑スタイル */
+
+        body {
+            background: linear-gradient(to right, #4f4f4f, #1c1c1c);
+            color: #eee;
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header, footer {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1, footer p {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 10px 0 0;
+            padding: 0;
+        }
+
+        nav li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s;
+        }
+
+        nav a:hover {
+            border-bottom: 2px solid #39FF14; /* 明るい緑ライン */
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #2c2c2c;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            color: #39FF14;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-list {
+            margin: 20px 0;
+        }
+
+        .game-item {
+            background: #3a3a3a;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .game-item h3 {
+            color: #39FF14;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #39FF14;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .game-item p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .game-item a {
+            color: #39FF14;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .game-item a:hover {
+            text-decoration: underline;
+        }
+
+        footer p {
+            margin: 0;
+        }
+        
+        @media (max-width: 600px) {
+            main {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>私のホームページ</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="about.html">自己紹介</a></li>
+            <li><a href="games.html" style="border-bottom:2px solid #39FF14;">ゲームコーナー</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h2>ゲームコーナー</h2>
+    <p>ここでは、私が作成したゲームやおすすめのゲームを紹介しています。お気に入りのゲームで遊んで、楽しんでいってください。</p>
+
+    <div class="game-list">
+        <div class="game-item">
+            <h3>インベーダーゲーム</h3>
+            <p>シンプルなシューティングゲーム。スペースキーで弾を撃ち、左右キーで自機を移動します。敵を倒しましょう！</p>
+            <p><a href="http://w3.seinan-gu.ac.jp/~ss-sh/shoot.html" target="_blank">インベーダーゲームで遊ぶ</a></p>
+        </div>
+
+        <div class="game-item">
+            <h3>ストップウォッチ</h3>
+            <p>シンプルなストップウォッチ。体内時計を鍛えよう。</p>
+            <p><a href="http://w3.seinan-gu.ac.jp/~ss-sh/ns.html" target="_blank">ストップウォッチを開く</a></p>
+        </div>
+
+        <div class="game-item">
+            <h3>パズルゲーム</h3>
+            <p>左右キーでブロックを移動、上キーで回転、下キーで落とします。4つ同じ色が揃うと消えます。</p>
+            <p><a href="http://w3.seinan-gu.ac.jp/~ss-sh/ns.html" target="_blank">ストップウォッチを開く</a></p>
+        </div>
+
+        <div class="game-item">
+            <h3>その他随時追加予定です。</h3>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 私のホームページ</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ランダムタイミングゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        #startButton, #stopButton {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #startButton:active, #stopButton:active {
+            background-color: #45a049;
+        }
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #timer {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ランダムタイミングゲーム</h1>
+    <p>「スタート」ボタンを押して、タイマーが進行します。目標時間は毎回ランダムで決まります！次に押したタイミングで、目標時間に近ければ高いスコアが得られます。</p>
+    
+    <div class="container">
+        <button id="startButton">スタート</button>
+        <button id="stopButton" style="display: none;">止める</button>
+        <p id="message"></p>
+        <p id="timer" style="display: none;"></p>
+    </div>
+
+    <script>
+        let startButton = document.getElementById('startButton');
+        let stopButton = document.getElementById('stopButton');
+        let message = document.getElementById('message');
+        let timerDisplay = document.getElementById('timer');
+        let startTime, stopTime, goalTime, timer;
+        let isTiming = false;
+
+        // ランダムに目標時間を5秒から15秒の範囲で設定
+        function getRandomGoalTime() {
+            return Math.floor(Math.random() * 11) + 5;  // 5~15秒の範囲
+        }
+
+        startButton.addEventListener('click', function() {
+            if (!isTiming) {
+                goalTime = getRandomGoalTime();  // 新しい目標時間を設定
+                isTiming = true;
+                message.textContent = `目標時間: ${goalTime}秒 です！タイマー開始！`;
+                startButton.style.display = 'none'; // Startボタンを隠す
+                stopButton.style.display = 'inline-block'; // Stopボタンを表示
+                timerDisplay.style.display = 'block'; // タイマー表示
+
+                startTime = Date.now();
+                let elapsedTime = 0;
+                timer = setInterval(function() {
+                    elapsedTime = (Date.now() - startTime) / 1000;
+                    if (elapsedTime <= 2) {
+                        timerDisplay.textContent = elapsedTime.toFixed(1) + "秒"; // 最初の2秒を表示
+                    } else {
+                        timerDisplay.textContent = "..."; // 2秒後は時間が表示されなくなる
+                    }
+                }, 100);
+            }
+        });
+
+        stopButton.addEventListener('click', function() {
+            if (isTiming) {
+                clearInterval(timer);  // タイマーを停止
+                stopTime = Date.now();
+                let totalTime = (stopTime - startTime) / 1000;
+                let score = Math.abs(totalTime - goalTime); // 目標時間との差をスコアとして算出
+
+                message.textContent = `ゲーム終了！あなたのタイムは${totalTime.toFixed(2)}秒です。`;
+                alert(`目標タイム: ${goalTime}秒\nあなたのタイム: ${totalTime.toFixed(2)}秒\nスコア: ${score.toFixed(2)}秒差`);
+
+                // リセット
+                startButton.style.display = 'inline-block';
+                stopButton.style.display = 'none';
+                timerDisplay.style.display = 'none';
+                isTiming = false;
+            }
+        });
+    </script>
+
+
+
+</body></html>

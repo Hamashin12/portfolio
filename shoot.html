@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インベーダーゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #222;
+            border: 2px solid #fff;
+        }
+        #score {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+        #gameOver {
+            font-size: 36px;
+            color: red;
+            display: none;
+        }
+        #startButton, #restartButton {
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #restartButton {
+            background-color: #FF5722;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>インベーダーゲーム</h1>
+<p id="score">スコア: 0</p>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<p id="gameOver">ゲームオーバー！</p>
+<button id="startButton">ゲームスタート</button>
+<button id="restartButton">最初からプレイ</button>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const startButton = document.getElementById("startButton");
+    const restartButton = document.getElementById("restartButton");
+
+    const playerWidth = 50;
+    const playerHeight = 20;
+    let playerX = canvas.width / 2 - playerWidth / 2;
+    const playerSpeed = 5;
+
+    const bulletWidth = 5;
+    const bulletHeight = 10;
+    const bulletSpeed = 5;
+    let bullets = [];
+
+    const invaderWidth = 40;
+    const invaderHeight = 20;
+    let invaderSpeed = 0.5;  // 初期の敵の落ちるスピード
+    let invaders = [];
+    let maxInvadersInColumn = 4;
+
+    let score = 0;
+    let gameOver = false;
+    let leftPressed = false;
+    let rightPressed = false;
+    let spacePressed = false;
+
+    // プレイヤーの描画
+    function drawPlayer() {
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(playerX, canvas.height - playerHeight - 10, playerWidth, playerHeight);
+    }
+
+    // 弾の描画
+    function drawBullets() {
+        ctx.fillStyle = "#FF0000";
+        bullets.forEach(bullet => {
+            ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+        });
+    }
+
+    // インベーダーの描画
+    function drawInvaders() {
+        ctx.fillStyle = "#FFFF00";
+        invaders.forEach(invader => {
+            ctx.fillRect(invader.x, invader.y, invaderWidth, invaderHeight);
+        });
+    }
+
+    // ゲーム開始
+    function startGame() {
+        score = 0;
+        invaders = [];
+        bullets = [];
+        playerX = canvas.width / 2 - playerWidth / 2;
+        invaderSpeed = 0.5;  // ゲーム開始時に敵の落ちるスピードをリセット
+        gameOver = false;
+        document.getElementById("gameOver").style.display = "none";
+        startButton.style.display = "none";
+        restartButton.style.display = "none";
+        initInvaders();
+        gameLoop();
+    }
+
+    // インベーダーをランダムに配置
+    function initInvaders() {
+        for (let col = 0; col < canvas.width / (invaderWidth + 10); col++) {
+            let maxY = canvas.height / 2;
+            let invaderCount = Math.floor(Math.random() * maxInvadersInColumn) + 1;  // ランダムに降るインベーダーの数
+            for (let i = 0; i < invaderCount; i++) {
+                let x = col * (invaderWidth + 10);
+                let y = -Math.random() * canvas.height;  // 画面上部からランダムに出現
+                invaders.push({ x: x, y: y });
+            }
+        }
+    }
+
+    // 弾の移動
+    function moveBullets() {
+        bullets.forEach(bullet => {
+            bullet.y -= bulletSpeed;
+        });
+        bullets = bullets.filter(bullet => bullet.y > 0); // 画面外に出た弾を削除
+    }
+
+    // インベーダーの移動
+    function moveInvaders() {
+        invaders.forEach(invader => {
+            invader.y += invaderSpeed;  // 敵の落ちるスピード
+        });
+
+        // スコアに応じて速度を調整
+        if (score >= 500) {
+            invaderSpeed = 0.5 * Math.pow(1.05, Math.floor(score / 500));
+        }
+
+        // インベーダーが画面下に到達したらゲームオーバー
+        if (invaders.some(invader => invader.y + invaderHeight >= canvas.height - playerHeight - 10)) {
+            gameOver = true;
+            document.getElementById("gameOver").style.display = "block";
+            restartButton.style.display = "inline-block";  // ゲームオーバー後に再スタートボタンを表示
+        }
+    }
+
+    // 衝突判定
+    function checkCollisions() {
+        bullets.forEach(bullet => {
+            invaders.forEach(invader => {
+                if (invader.y < bullet.y && invader.y + invaderHeight > bullet.y && invader.x < bullet.x && invader.x + invaderWidth > bullet.x) {
+                    invader.y = -1000;  // 衝突したインベーダーを消す
+                    bullet.y = -1000;   // 弾を消す
+                    score += 10;
+                }
+            });
+        });
+    }
+
+    // プレイヤーの移動
+    function movePlayer() {
+        if (leftPressed && playerX > 0) {
+            playerX -= playerSpeed;
+        }
+        if (rightPressed && playerX < canvas.width - playerWidth) {
+            playerX += playerSpeed;
+        }
+    }
+
+    // 弾を発射
+    function shootBullet() {
+        bullets.push({ x: playerX + playerWidth / 2 - bulletWidth / 2, y: canvas.height - playerHeight - 20 });
+    }
+
+    // イベントリスナー
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" || e.key === "a") {
+            leftPressed = true;
+        }
+        if (e.key === "ArrowRight" || e.key === "d") {
+            rightPressed = true;
+        }
+        if (e.key === " " && !spacePressed) {
+            spacePressed = true;
+            shootBullet();
+        }
+    });
+
+    document.addEventListener("keyup", (e) => {
+        if (e.key === "ArrowLeft" || e.key === "a") {
+            leftPressed = false;
+        }
+        if (e.key === "ArrowRight" || e.key === "d") {
+            rightPressed = false;
+        }
+        if (e.key === " ") {
+            spacePressed = false;
+        }
+    });
+
+    // ゲームループ
+    function gameLoop() {
+        if (gameOver) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        movePlayer();
+        moveBullets();
+        moveInvaders();
+        checkCollisions();
+
+        drawPlayer();
+        drawBullets();
+        drawInvaders();
+
+        document.getElementById("score").textContent = "スコア: " + score;
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // ゲーム開始ボタンの処理
+    startButton.addEventListener("click", startGame);
+
+    // 最初からプレイボタンの処理
+    restartButton.addEventListener("click", startGame);
+
+</script>
+
+
+
+</body>
+</html>

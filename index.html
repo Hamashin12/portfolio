@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム - 私のホームページ</title>
+    <link rel="stylesheet" href="css/styles.css"> <!-- 共通CSSファイル -->
+    <style>
+        body {
+            background: linear-gradient(to right, #4f4f4f, #1c1c1c);
+            color: #eee;
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header, footer {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1, footer p {
+            margin: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 10px 0 0;
+            padding: 0;
+        }
+
+        nav li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s;
+        }
+
+        nav a:hover {
+            border-bottom: 2px solid #39FF14;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #2c2c2c;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h2 {
+            color: #39FF14;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .links {
+            margin-top: 40px;
+        }
+
+        /* ボタンを縦に並べる */
+        .links a {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: #39FF14;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 200px; /* ボタン幅を統一すると見た目が揃いやすい */
+        }
+
+        .links a:hover {
+            background: #32e313;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 20px;
+            }
+            .links a {
+                width: 100%; /* 画面幅が狭い場合は幅を100%にしてもOK */
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>私のホームページ</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html" style="border-bottom:2px solid #39FF14;">ホーム</a></li>
+            <li><a href="about.html">自己紹介</a></li>
+            <li><a href="games.html">ゲームコーナー</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h2>ようこそ！</h2>
+    <p>このホームページでは、私の研究活動や趣味、制作したゲームコンテンツなどを紹介しています。  
+       自己紹介やゲームコーナー、そしてお問い合わせ先は下記のボタンからご覧ください。</p>
+
+    <div class="links">
+        <a href="about.html">自己紹介ページへ</a>
+        <a href="games.html">ゲームコーナーへ</a>
+        <a href="contact.html">お問い合わせページへ</a>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 私のホームページ</p>
+</footer>
+</body>
+</html>
